@@ -1,11 +1,12 @@
 plugins {
     id 'java'
+    id 'me.qoomon.git-versioning' version '6.4.2'
     id 'org.springframework.boot' version '3.0.3'
     id 'io.spring.dependency-management' version '1.1.0'
 }
 
 group = 'net.mrchar.security'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.0-SNAPSHOT'
 sourceCompatibility = '17'
 
 configurations {
@@ -15,6 +16,7 @@ configurations {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -27,6 +29,23 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+}
+
+gitVersioning.apply {
+    refs {
+        considerTagsOnBranches = true
+        tag('v(?<version>[.\\d]+)\\-SNAPSHOT') {
+            version = '${ref.version}-SNAPSHOT+${commit.short}'
+        }
+        tag('v(?<version>[.\\d]+)') {
+            version = '${ref.version}'
+        }
+    }
+
+    // optional fallback configuration in case of no matching ref configuration
+    rev {
+        version = 'unversioned+${commit.short}'
+    }
 }
 
 tasks.named('test') {
