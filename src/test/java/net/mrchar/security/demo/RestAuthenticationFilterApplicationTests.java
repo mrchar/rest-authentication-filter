@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,6 +41,15 @@ class RestAuthenticationFilterApplicationTests {
                         .content("{\"username\": \"username\", \"password\": \"invalid\"}"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void logout() throws Exception {
+        mockMvc.perform(
+                        post("/api/logout")
+                                .with(csrf())
+                )
+                .andExpect(status().isOk());
     }
 
 }

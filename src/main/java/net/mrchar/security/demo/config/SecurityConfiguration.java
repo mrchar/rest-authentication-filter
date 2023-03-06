@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
@@ -15,19 +16,22 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorize -> {
-            authorize.requestMatchers("/api/login").permitAll();
-            authorize.anyRequest().authenticated();
+        http.authorizeHttpRequests(configurer -> {
+            configurer.requestMatchers("/api/login").permitAll();
+            configurer.anyRequest().authenticated();
         });
 
-        http.csrf(customizer -> {
-            customizer.ignoringRequestMatchers("/api/login");
-            customizer.csrfTokenRepository(new CookieCsrfTokenRepository());
+        http.csrf(configurer -> {
+            configurer.ignoringRequestMatchers("/api/login");
+            configurer.csrfTokenRepository(new CookieCsrfTokenRepository());
         });
 
         http.formLogin().disable();
         RestAuthenticationFilter restAuthenticationFilter = new RestAuthenticationFilter();
         http.addFilterAt(restAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.logout()
+                .logoutUrl("/api/logout")
+                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
         DefaultSecurityFilterChain securityFilterChain = http.build();
 
         AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
