@@ -1,7 +1,7 @@
 package net.mrchar.security.demo.config;
 
 import net.mrchar.security.web.authentication.RestAccessDeniedHandler;
-import net.mrchar.security.web.authentication.RestLoginConfigurer;
+import net.mrchar.security.web.authentication.RestFormLoginConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class SecurityConfiguration {
         });
 
         http.formLogin().disable();
-        http.apply(new RestLoginConfigurer());
+        http.apply(new RestFormLoginConfigurer<>());
         http.logout()
                 .logoutUrl("/api/logout")
                 .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
