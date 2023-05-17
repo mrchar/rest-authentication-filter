@@ -25,11 +25,6 @@ public class SecurityConfiguration {
             configurer.csrfTokenRepository(new CookieCsrfTokenRepository());
         });
 
-//        http.formLogin()
-//                .loginProcessingUrl("/api/login")
-//                .successForwardUrl("/api/login/success")
-//                .failureForwardUrl("/api/login/failure");
-
         http.formLogin().disable();
         http.apply(new RestFormLoginConfigurer<>());
         http.logout()
