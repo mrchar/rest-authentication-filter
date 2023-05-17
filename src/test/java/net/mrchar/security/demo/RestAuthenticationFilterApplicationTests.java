@@ -1,5 +1,6 @@
 package net.mrchar.security.demo;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -7,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,6 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class RestAuthenticationFilterApplicationTests {
+    private static final String SESSION_ID_TOKEN = "X-Auth-Token";
+
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -31,22 +35,37 @@ class RestAuthenticationFilterApplicationTests {
         this.securityProperties.getUser().setName("username");
         this.securityProperties.getUser().setPassword("password");
 
-        mockMvc.perform(post("/api/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\": \"username\", \"password\": \"password\"}"))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-
-        mockMvc.perform(post("/api/login")
+        MvcResult loginFailedResponse = mockMvc.perform(post("/api/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\": \"username\", \"password\": \"invalid\"}"))
                 .andDo(print())
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andReturn();
 
-        mockMvc.perform(get("/api/needAuthenticated"))
+        Assertions.assertFalse(loginFailedResponse.getResponse()
+                .containsHeader(SESSION_ID_TOKEN));
+
+        MvcResult loginSuccessResponse = mockMvc.perform(post("/api/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\": \"username\", \"password\": \"password\"}"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assertions.assertTrue(loginSuccessResponse.getResponse()
+                .containsHeader(SESSION_ID_TOKEN));
+
+        String sessionId = loginSuccessResponse.getResponse().getHeader(SESSION_ID_TOKEN);
+
+        mockMvc.perform(get("/api/needAuthenticated")
+                        .header(SESSION_ID_TOKEN, "invalidSessionId"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(get("/api/needAuthenticated")
+                        .header(SESSION_ID_TOKEN, sessionId))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
