@@ -5,3 +5,5 @@ pluginManagement {
     }
 }
 rootProject.name = 'rest-authentication-filter'
+include 'rest-authentication-filter'
+include 'samples'

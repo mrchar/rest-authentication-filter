@@ -1,4 +1,4 @@
-package net.mrchar.security.demo.config;
+package com.example.samples.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

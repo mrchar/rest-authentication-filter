@@ -1,4 +1,4 @@
-package net.mrchar.security.demo.config;
+package com.example.samples.config;
 
 import net.mrchar.security.web.authentication.RestAccessDeniedHandler;
 import net.mrchar.security.web.authentication.RestFormLoginConfigurer;
