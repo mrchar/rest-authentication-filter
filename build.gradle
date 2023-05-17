@@ -1,54 +1,32 @@
 plugins {
-    id 'java'
+    id 'base'
     id 'me.qoomon.git-versioning' version '6.4.2'
-    id 'org.springframework.boot' version '3.0.3'
-    id 'io.spring.dependency-management' version '1.1.0'
 }
 
-group = 'net.mrchar.security'
-version = '0.0.0-SNAPSHOT'
-sourceCompatibility = '17'
+allprojects {
+    apply plugin: 'me.qoomon.git-versioning'
+    
+    version = '0.0.0-SNAPSHOT'
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
+    repositories {
+        mavenLocal()
+        mavenCentral()
     }
-}
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.session:spring-session-core'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-}
-
-gitVersioning.apply {
-    refs {
-        considerTagsOnBranches = true
-        tag('v(?<version>[.\\d]+)\\-SNAPSHOT') {
-            version = '${ref.version}-SNAPSHOT+${commit.short}'
+    gitVersioning.apply {
+        refs {
+            considerTagsOnBranches = true
+            tag('v(?<version>[.\\d]+)\\-SNAPSHOT') {
+                version = '${ref.version}-SNAPSHOT+${commit.short}'
+            }
+            tag('v(?<version>[.\\d]+)') {
+                version = '${ref.version}'
+            }
         }
-        tag('v(?<version>[.\\d]+)') {
-            version = '${ref.version}'
+
+        // optional fallback configuration in case of no matching ref configuration
+        rev {
+            version = 'unversioned+${commit.short}'
         }
     }
-
-    // optional fallback configuration in case of no matching ref configuration
-    rev {
-        version = 'unversioned+${commit.short}'
-    }
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
 }

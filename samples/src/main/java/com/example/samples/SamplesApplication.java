@@ -1,13 +1,13 @@
-package net.mrchar.security.demo;
+package com.example.samples;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RestAuthenticationFilterApplication {
+public class SamplesApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RestAuthenticationFilterApplication.class, args);
+        SpringApplication.run(SamplesApplication.class, args);
     }
 
 }

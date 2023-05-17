@@ -1,4 +1,5 @@
-package net.mrchar.security.demo;
+package com.example.samples;
+
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class RestAuthenticationFilterApplicationTests {
+class SamplesApplicationTests {
     private static final String SESSION_ID_TOKEN = "X-Auth-Token";
 
     @Autowired
